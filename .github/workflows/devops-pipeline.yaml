@@ -5,9 +5,36 @@ on:
     branches: [ "dev" ]
 
 jobs:
-  build-and-ship-mern-app:
+  validate-and-test:
     runs-on: ubuntu-latest
+    steps:
+    - name: Download Code
+      uses: actions/checkout@v4
 
+    # 1. Install Node on the runner to execute code checks
+    - name: Setup Node.js Environment
+      uses: actions/setup-node@v4
+      with:
+        node-node-version: 22
+
+    # 2. Check Backend Code for Typos & Broken Logic
+    - name: Verify Backend Dependencies & Run Tests
+      run: |
+        cd backend
+        npm ci
+        # npm run lint   # Uncomment if you use ESLint to catch syntax typos
+        # npm test       # Uncomment if you have written automated Jest/Mocha tests
+
+    # 3. Check Frontend Code for Typos & Broken Logic
+    - name: Verify Frontend Dependencies & Run Tests
+      run: |
+        cd frontend
+        npm ci
+        # npm run build  # This checks if your compilation pipeline breaks
+
+  build-and-ship-mern-app:
+    needs: validate-and-test # 👈 CRITICAL: This job will BLOCKED if tests fail!
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
