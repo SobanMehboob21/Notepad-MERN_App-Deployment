@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: frontend
 spec:
-  type: LoadBalancer   # gives you an external IP; use NodePort if testing on minikube
+  type: ClusterIP   # gives you an external IP; use NodePort if testing on minikube
   selector:
     app: frontend
   ports:
